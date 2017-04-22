@@ -4,11 +4,11 @@ from app import settings
 
 log = logging.getLogger(__name__)
 
-api = Api(version='1.0', title='GRASS WPS',
+api = Api(version='1.0 (alpha)', title='GRASS WPS',
           description='<a href="https://grass.osgeo.org">GRASS</a> '
-                      'Web Processing Service built on top of '
+                      'web processing service built on top of '
                       '<a href="http://geoserver.org">GeoServer</a> '
-                      'by using python binding/wrapper')
+                      'by using python binding/wrapper (see <a href="wps/demo">Demo</a>).')
 
 
 @api.errorhandler

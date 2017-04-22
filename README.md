@@ -5,4 +5,8 @@
 #### Requirements       
     Flask           0.12.1     
     flask-restplus  0.10.1          
-    pycurl          7.43.0     
+    pycurl          7.43.0  
+       
+#### Todo:
+Grab `binary` from `GeoServer` to local as `tempfile`, and then processing.  
+
