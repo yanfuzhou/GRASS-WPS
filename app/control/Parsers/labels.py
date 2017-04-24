@@ -1,5 +1,6 @@
 VIEWSHED_LABEL = {
     "angle": 'angle',
     "coordinates": 'coordinates',
-    "distance": 'target_attributes'
+    "distance": 'max_distance',
+    "height": 'observer_height'
 }
