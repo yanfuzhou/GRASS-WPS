@@ -1,5 +1,5 @@
-from flask_restplus import fields
 from app.control.API import api
+from flask_restplus import fields
 
 crs = api.model('projection', {
     'name': fields.String(required=True, readOnly=True, description='Use EPSG/OGC standard')

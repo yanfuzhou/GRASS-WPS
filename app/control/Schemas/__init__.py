@@ -1,6 +1,6 @@
-from flask_restplus import fields
 from app.control.API import api
-from app.control.Schemas.ogc import crs_properties, properties
+from flask_restplus import fields
+from app.control.Schemas.ogc import crs_properties
 
 wps = api.model('wps', {
     'service': fields.String(required=True, readOnly=True, description="WPS name"),
@@ -16,7 +16,6 @@ polygon_geometry = api.model('polygon.geometry', {
 
 polygon_feature = api.model('polygon.feature', {
     'geometry': fields.Nested(polygon_geometry, required=True, readOnly=True),
-    'properties': fields.Nested(properties, readOnly=True),
     'type': fields.String(required=True, readOnly=True, description="Must be 'Feature'")
 })
 

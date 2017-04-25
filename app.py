@@ -1,9 +1,8 @@
-import logging.config
 import os
-
-from flask import Flask, Blueprint, send_from_directory
+import logging.config
 from app import settings
 from app.control.API import api
+from flask import Flask, Blueprint, send_from_directory
 from app.control.view.wpsview import ns as viewshed_namespace
 
 app = Flask(__name__)

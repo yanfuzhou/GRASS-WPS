@@ -1,15 +1,15 @@
 import os
 import sys
-import subprocess
-import shutil
+import uuid
+import logging
 import binascii
 import tempfile
-import logging
+import subprocess
 
 log = logging.getLogger(__name__)
 
 
-def raster_viewshed(coordinates, height, rasterfile):
+def raster_viewshed(coordinates, distance, height, rasterfile):
     # Linux: Set path to GRASS bin executable (TODO: NEEDED?)
     grass7bin = os.getenv('GRASS_BIN')
     # Linux: Set path to GRASS libs (TODO: NEEDED?)
@@ -23,8 +23,8 @@ def raster_viewshed(coordinates, height, rasterfile):
         sys.exit("ERROR: Cannot find GRASS GIS start script"
                  " {cmd}: {error}".format(cmd=startcmd[0], error=error))
     if p.returncode != 0:
-        print >> sys.stderr, "ERROR: %s" % err
-        print >> sys.stderr, "ERROR: Cannot find GRASS GIS 7 start script (%s)" % startcmd
+        log.info("ERROR: %s" % err)
+        log.info("ERROR: Cannot find GRASS GIS 7 start script (%s)" % startcmd)
         sys.exit(-1)
     gisbase = out.strip(os.linesep)
     # set GISBASE environment variable
@@ -56,11 +56,11 @@ def raster_viewshed(coordinates, height, rasterfile):
         sys.exit("ERROR: Cannot find GRASS GIS start script"
                  " {cmd}: {error}".format(cmd=startcmd[0], error=error))
     if p.returncode != 0:
-        print >> sys.stderr, 'ERROR: %s' % err
-        print >> sys.stderr, 'ERROR: Cannot generate location (%s)' % startcmd
+        log.info('ERROR: %s' % err)
+        log.info('ERROR: Cannot generate location (%s)' % startcmd)
         sys.exit(-1)
     else:
-        print 'Created location %s' % location_path
+        log.info('Created location %s' % location_path)
     # Now the location with PERMANENT mapset exists.
     ########
     # Now we can use PyGRASS or GRASS Scripting library etc. after
@@ -82,24 +82,21 @@ def raster_viewshed(coordinates, height, rasterfile):
     ###########
     # Launch session and do something
     gsetup.init(gisbase, gisdb, location, mapset)
-    # say hello
-    grass.message('--- GRASS GIS 7: Current GRASS GIS 7 environment:')
-    print grass.gisenv()
-    # do something in GRASS now...
-    grass.message('--- GRASS GIS 7: Checking projection info:')
-    in_proj = grass.read_command('g.proj', flags='jf')
-    # selective proj parameter printing
-    kv = grass.parse_key_val(in_proj)
-    print kv
-    print kv['+proj']
-    # print full proj parameter printing
-    in_proj = in_proj.strip()
-    grass.message("--- Found projection parameters: '%s'" % in_proj)
-    # show current region:
-    grass.message('--- GRASS GIS 7: Checking computational region info:')
-    in_region = grass.region()
-    grass.message("--- Computational region: '%s'" % in_region)
     # do something else: r.mapcalc, v.rectify, ...
+    rastermap = 'dem'
+    outraster = 'viewshed'
+    outvector = 'polygonized'
+    dissolved = 'dissolved'
+    grass.run_command('r.in.gdal', input=rasterfile, output=rastermap)
+    grass.run_command('r.viewshed', input=rastermap, output=outraster, coordinates=coordinates,
+                      observer_elevation=height, max_distance=distance)
+    grass.run_command('r.to.vect', input=outraster, output=outvector, type='area')
+    grass.run_command('v.db.addcolumn', map=outvector, columns='dis int')
+    grass.run_command('v.db.update', map=outvector, column='dis', value=1)
+    grass.run_command('v.dissolve', input=outvector, column='dis', output=dissolved)
+    vectorfile = os.path.join(tempfile.gettempdir(), str(uuid.uuid1()) + '.geojson')
+    grass.run_command('v.out.ogr', input=dissolved, output=vectorfile, format='GeoJSON')
+    return vectorfile
 
 
 def viewshed_payload(min_x, min_y, max_x, max_y):

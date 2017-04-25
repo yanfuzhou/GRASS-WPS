@@ -1,5 +1,5 @@
-from flask_restplus import reqparse
 from labels import VIEWSHED_LABEL
+from flask_restplus import reqparse
 
 viewshed_arguments = reqparse.RequestParser()
 viewshed_arguments.add_argument(VIEWSHED_LABEL['angle'], type=float, required=False, default=0.0,
