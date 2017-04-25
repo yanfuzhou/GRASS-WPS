@@ -1,1 +1,388 @@
-<h2>This is viewshed demo page!</h2>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Viewshed</title>
+    <link rel="stylesheet" href="https://openlayers.org/en/v4.1.0/css/ol.css" type="text/css">
+    <style>
+    /* html, body */
+    html, body {
+    	width: 100%;
+    	height: 100%;
+    	margin-top: 0px;
+    	margin-right: 0px;
+    	margin-bottom: 0px;
+    	margin-left: 0px;
+    	padding-top: 0px;
+    	padding-right: 0px;
+    	padding-bottom: 0px;
+    	padding-left: 0px;
+    	min-width: 940px;
+    	min-height: 768px;
+    	overflow:hidden;
+    }
+    /* Map Area */
+    #map {
+    	margin-top: auto;
+    	margin-right: auto;
+    	margin-bottom: auto;
+    	margin-left: auto;
+    	width: 100%;
+    	height: 100%;
+    }
+    #map .ol-scale-line {
+    	height: 21px;
+    	top: 12px;
+    	left: 44px;
+    	position: absolute;
+    }
+    #map .ol-zoomslider {
+    	top: 72px;
+    	left: 16px;
+    	right: auto;
+    	background-color: rgba(16,79,121,0.2);
+    	width: 15px;
+    	height: 200px;
+    	padding: 0;
+    	box-shadow: 0 0 5px rgb(16,79,121);
+    	border-radius: 20px;
+    }
+    #map .ol-zoomslider:hover {
+    	background-color: rgba(16,79,121,0.3);
+    }
+    #map .ol-zoomslider-thumb {
+    	height: 15px;
+    	width: 15px;
+    	margin: 0px;
+    	filter: none;
+    	background-color: rgba(16,79,121,0.6);
+    	border-radius: 20px;
+    }
+    #map a.ol-zoomslider-handle:hover {
+    	background-color: rgba(16,79,121,0.7);
+    }
+    #map-homebutton {
+    	width: 26px;
+    	height: 26px;
+    	top: 282px;
+    	left: 10px;
+    	z-index: 20;
+    	position: absolute;
+    	cursor: pointer;
+    	opacity: 0.8;
+    	background-color: rgba(255,255,255,0.5);
+    	border-radius: 5px;
+    }
+    /* Utility Area */
+    #mouse-position{
+      bottom: 40px;
+      left: 40px;
+      font-size: 16px;
+    	font-family: Arial;
+    	z-index: 20;
+      position: absolute;
+    }
+    #loading-spin{
+      top: 50%;
+      left: 50%;
+      font-size: 20px;
+    	font-family: Arial;
+      font-weight: bold;
+    	z-index: 20;
+      position: absolute;
+      visibility: hidden;
+    }
+    #units{
+    	top: 42px;
+    	left: 44px;
+    	font-size: 12px;
+    	font-family: Arial;
+    	z-index: 20;
+    	position: absolute;
+    }
+    #clear{
+      bottom: 42px;
+    	right: 106px;
+    	font-size: 16px;
+    	font-family: Arial;
+    	z-index: 20;
+    	position: absolute;
+    }
+    #backHome{
+      bottom: 42px;
+    	right: 46px;
+    	font-size: 16px;
+    	font-family: Arial;
+    	z-index: 20;
+    	position: absolute;
+    }
+    /* Overview Map */
+    .ol-custom-overviewmap, .ol-custom-overviewmap.ol-uncollapsible {
+    	bottom: auto;
+    	left: auto;
+    	right: 12px;
+    	top: 12px;
+    }
+    .ol-custom-overviewmap:not(.ol-collapsed)  {
+    	background-color: rgba(16,79,121,0.7);
+    	opacity: 0.8;
+    	padding-top: 4px;
+    	padding-left: 4px;
+    	padding-right: 4px;
+    }
+    .ol-custom-overviewmap .ol-overviewmap-map {
+    	border: none;
+    	width: 126px;
+    	height: 126px;
+    }
+    .ol-custom-overviewmap .ol-overviewmap-box {
+    	border: 2px solid rgba(0,255,255,1);
+    }
+    .ol-custom-overviewmap:not(.ol-collapsed) button{
+    	bottom: auto;
+    	left: auto;
+    	right: 7px;
+    	top: 7px;
+    }
+    .ol-rotate {
+    	top: 170px;
+    	right: 0px;
+    }
+    </style>
+    <!-- The line below is only needed for old environments like Internet Explorer and Android 4.x -->
+    <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>
+    <script src="https://openlayers.org/en/v4.1.0/build/ol.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script>
+    // JavaScript Document
+    // Database and Spatial parameters
+    var HOST_IP = "localhost";
+    var VERSION = "1.1.0";
+    var STORE = "demo";
+    var LAYER = "new_york_hillshade";
+    var PROJ = "3857";
+    // WPS server Parameters
+    var WPS_HOST = "localhost"
+    var WPS_PORT = "5000"
+    var WPS_VIEWSHED = "viewshed"
+    /* -------------- */
+    /* Map Parameters */
+    /* -------------- */
+    var max_zoom = 15;
+    var min_zoom = 10;
+    var default_zoom = 11;
+    // Object center (default view center)
+    var center = [-8255348.434174905065447, 5203190.959709019400179];
+    // Geometry extent (restricted view boundary)
+    var extent = [-8297497.3734589666128159, 5175406.0593622270971537, -8213199.4948908435180783, 5230975.8600558117032051];
+    window.onload = function(){
+      var loading = document.getElementById('loading-spin');
+      var clear = document.getElementById('clear');
+      var styles = {
+        'Polygon': new ol.style.Style({
+          stroke: new ol.style.Stroke({
+            color: 'rgba(0, 255, 0, 1.0)',
+            // lineDash: [4],
+            width: 1.0
+          }),
+          fill: new ol.style.Fill({
+            color: 'rgba(0, 255, 0, 0.5)'
+          })
+        })
+      };
+      var styleFunction = function(feature) {
+        return styles[feature.getGeometry().getType()];
+      };
+      // To enable use tiled images
+      var hillshade =   new ol.layer.Tile({
+        source: new ol.source.TileWMS({
+          url: 'http://' + HOST_IP + '/geoserver/' + STORE + '/wms',
+          params: {'LAYERS': STORE + ':' + LAYER, 'TILED': true},
+          serverType: 'geoserver'
+        }),
+        opacity: 1.0
+      });
+      /*---------------------*/
+      /* Add basemap service */
+      /*---------------------*/
+      var raster = new ol.layer.Tile({
+        source: new ol.source.OSM() //new ol.source.MapQuest({layer: 'osm'})
+      });
+      /*-----------------------*/
+    	/* Add sacle line to map */
+    	/*-----------------------*/
+    	var scaleLineControl = new ol.control.ScaleLine();
+    	scaleLineControl.setUnits('us');
+    	// select menu for scale line
+    	var unitsSelect = $('#units');
+    	unitsSelect.on('change', function() {
+    		scaleLineControl.setUnits(this.value);
+    	});
+    	unitsSelect.val(scaleLineControl.getUnits());
+      /*-------------------*/
+    	/* Add slider to map */
+    	/*-------------------*/
+    	var zoomslider = new ol.control.ZoomSlider();
+      /*---------------------*/
+    	/* Add overview to map */
+    	/*---------------------*/
+    	var overviewMapControl = new ol.control.OverviewMap({
+    		// see in overviewmap-custom.html to see the custom CSS used
+    		className: 'ol-overviewmap ol-custom-overviewmap',
+    		layers: [new ol.layer.Tile({
+    			source: new ol.source.OSM({
+    				'url': 'http://{a-c}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png'
+    			})
+    		})],
+    		collapseLabel: '\u00BB',
+    		label: '\u00AB',
+    		collapsed: true
+    	});
+      /*----------------------------*/
+    	/* include everythings to map */
+    	/*----------------------------*/
+      var mousePositionControl = new ol.control.MousePosition({
+        coordinateFormat: ol.coordinate.createStringXY(4),
+        projection: 'EPSG:3857',
+        // comment the following two lines to have the mouse position
+        // be placed within the map.
+        className: 'custom-mouse-position',
+        target: document.getElementById('mouse-position'),
+        undefinedHTML: '&nbsp;'
+      });
+      var view = new ol.View({
+        center: center,
+    		maxZoom: max_zoom,
+    		minZoom: min_zoom,
+    		projection: 'EPSG:' + PROJ,
+    		zoom: default_zoom
+      });
+    	var map = new ol.Map({
+    	  layers: [raster, hillshade],
+    	  controls: ol.control.defaults({ attribution: false }).extend([scaleLineControl, overviewMapControl, mousePositionControl]),
+    	  target: 'map',
+    	  view: view
+    	});
+      map.addControl(zoomslider);
+      var vectorLayer = new ol.layer.Vector();
+      var pointLayer = new ol.layer.Vector();
+      map.on('click', function(evt) {
+        loading.style.visibility = 'visible';
+        map.removeLayer(vectorLayer);
+        map.removeLayer(pointLayer);
+        if (evt.dragging) {
+          return;
+        }
+        var coordinates = map.getEventCoordinate(evt.originalEvent);
+        var data = null;
+        var url = 'http://' + WPS_HOST + ':' + WPS_PORT + '/grass/wps/' + WPS_VIEWSHED + '?coordinates=' + coordinates[0] + '%2C' + coordinates[1];
+        var xhr = new XMLHttpRequest();
+        xhr.addEventListener("readystatechange", function () {
+          if (this.readyState === 4) {
+            var geojsonObject = JSON.parse(this.responseText);
+            var vectorSource = new ol.source.Vector({
+              features: (new ol.format.GeoJSON()).readFeatures(geojsonObject)
+            });
+            var pt = new ol.source.Vector({
+                features: [(new ol.Feature({
+                  geometry: new ol.geom.Point(coordinates)
+                }))]
+              });
+            vectorLayer.setSource(vectorSource);
+            vectorLayer.setStyle(styleFunction);
+            pointLayer.setSource(pt);
+            pointLayer.setStyle(new ol.style.Style({
+              image: new ol.style.Circle({
+                radius: 6,
+                fill: new ol.style.Fill({ color: 'rgba(51,153,204,1.0)' }),
+                stroke: new ol.style.Stroke({ color: 'rgba(255,255,255,1.0)', width: 2 })
+              })
+            }));
+            map.addLayer(vectorLayer);
+            map.addLayer(pointLayer);
+            map.getView().setCenter(coordinates);
+            map.getView().setZoom(max_zoom);
+            loading.style.visibility = 'hidden';
+          }
+        });
+        xhr.open("GET", url);
+        xhr.send(data);
+      });
+      // Add restriction to map
+    	var constrainPan = function() {
+    		var delta = 1.0;
+    		var current_pt = map.getView().getCenter();
+    		var x = current_pt[0];
+    		var y = current_pt[1];
+    		var xMin = extent[0];
+    		var yMin = extent[1];
+    		var xMax = extent[2];
+    		var yMax = extent[3];
+    		if (x > xMin && x < xMax && y > yMin && y < yMax) {
+    			return;
+    		} else {
+    			/*
+    				1 | 8 | 7
+    			   ----------
+    				2 |   | 6
+    			   ----------
+    				3 | 4 | 5
+    			*/
+    			if (x <= xMin && y >= yMax) { 									// 1
+    				map.getView().setCenter([xMin + delta, yMax - delta]);
+    			}
+    			if (x <= xMin && y > yMin && y < yMax) { 						// 2
+    				map.getView().setCenter([xMin + delta, y]);
+    			}
+    			if (x <= xMin && y <= yMin) { 									// 3
+    				map.getView().setCenter([xMin + delta, yMin + delta]);
+    			}
+    			if (x > xMin && x < xMax && y <= yMin) { 						// 4
+    				map.getView().setCenter([x, yMin + delta]);
+    			}
+    			if (x >= xMax && y <= yMin) { 									// 5
+    				map.getView().setCenter([xMax - delta, yMin + delta]);
+    			}
+    			if (x >=xMax && y > yMin && y < yMax) { 						// 6
+    				map.getView().setCenter([xMax - delta, y]);
+    			}
+    			if (x >= xMax && y >= yMax) { 									// 7
+    				map.getView().setCenter([xMax - delta, yMax - delta]);
+    			}
+    			if (x > xMin && x < xMax && y >= yMax) { 						// 8
+    				map.getView().setCenter([x, yMax - delta]);
+    			}
+    		}
+    	}
+    	map.getView().on('change:resolution', constrainPan);
+    	map.getView().on('change:center', constrainPan);
+      // add home button
+    	document.getElementById('map-homebutton').addEventListener('click', function() {
+    		map.getView().setCenter(center);
+    		map.getView().setZoom(default_zoom);
+    	});
+      clear.addEventListener('click', function() {
+        map.removeLayer(vectorLayer);
+        map.removeLayer(pointLayer);
+      });
+    }
+    </script>
+  </head>
+  <body>
+    <div id="map" class="map">
+      <div id="map-homebutton">
+        <img src="home.png" width="100%" height="100%" alt=""/>
+      </div>
+      <div id="loading-spin">Loading ... </div>
+    </div>
+    <div id="mouse-position"></div>
+    <select id="units">
+        <option value="degrees">degrees</option>
+        <option value="imperial">imperial inch</option>
+        <option value="us">us inch</option>
+        <option value="nautical">nautical mile</option>
+        <option value="metric">metric</option>
+    </select>
+    <a href="http://localhost:5000/grass/"><button id="backHome">Back</button></a>
+    <button id="clear">Clear</button>
+  </body>
+</html>
