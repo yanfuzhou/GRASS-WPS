@@ -24,8 +24,7 @@ class ServiceRegister(object):
 
 
 class ViewShed(object):
-    def __init__(self, angle, x, y, distance, height):
-        self.angle = angle
+    def __init__(self, x, y, distance, height):
         self.x = x
         self.y = y
         self.distance = distance

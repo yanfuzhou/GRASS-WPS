@@ -20,6 +20,21 @@ def demo():
     return send_from_directory(os.path.join(app.root_path, 'static', 'demo'), 'index.html', mimetype='text/html')
 
 
+@app.route('/grass/wps/demo/ol.css')
+def openlayer_css():
+    return send_from_directory(os.path.join(app.root_path, 'static', 'demo'), 'ol.css', mimetype='text/css')
+
+
+@app.route('/grass/wps/demo/ol.js')
+def openlayer_js():
+    return send_from_directory(os.path.join(app.root_path, 'static', 'demo'), 'ol.js', mimetype='text/javascript')
+
+
+@app.route('/grass/wps/demo/jquery.js')
+def jquery():
+    return send_from_directory(os.path.join(app.root_path, 'static', 'demo'), 'jquery.js', mimetype='text/javascript')
+
+
 @app.route('/grass/wps/demo/home.png')
 def map_home_button():
     return send_from_directory(os.path.join(app.root_path, 'static', 'demo'), 'home.png', mimetype='image/png')

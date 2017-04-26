@@ -32,25 +32,18 @@ class ViewshedMethod(Resource):
         Returns viewshed analysis result.
         """
         args = viewshed_arguments.parse_args(request)
-        angle = args.get('angle', 0.0)
         coordinates = args.get('coordinates')
         distance = args.get('distance', 1000.0)
         height = args.get('height', 1.75)
-        if args.get('angle') is not None:
-            angle = args.get('angle')
-        if angle < 0.0 or angle > 45.0:
-            return {"message": "angle must be between 0.0d ~ 45.0d"}
         if args.get('distance') is not None:
              distance = args.get('distance')
         if args.get('height') is not None:
             height = args.get('height')
-        if angle is 0:
-            height = height + (math.tan((angle * math.pi)/180) * distance)
         if ',' in coordinates:
             try:
                 x = float(coordinates.split(',')[0])
                 y = float(coordinates.split(',')[1])
-                viewshed = ViewShed(angle=angle, x=x, y=y, distance=distance, height=height)
+                viewshed = ViewShed(x=x, y=y, distance=distance, height=height)
                 return viewshed.analysis()
             except Exception as e:
                 log.info(e)

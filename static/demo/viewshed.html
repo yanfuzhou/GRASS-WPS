@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>Viewshed</title>
-    <link rel="stylesheet" href="https://openlayers.org/en/v4.1.0/css/ol.css" type="text/css">
+    <link rel="stylesheet" href="ol.css" type="text/css">
     <style>
     /* html, body */
     html, body {
@@ -68,7 +68,7 @@
     	z-index: 20;
     	position: absolute;
     	cursor: pointer;
-    	opacity: 0.8;
+    	opacity: 0.7;
     	background-color: rgba(255,255,255,0.5);
     	border-radius: 5px;
     }
@@ -148,10 +148,8 @@
     	right: 0px;
     }
     </style>
-    <!-- The line below is only needed for old environments like Internet Explorer and Android 4.x -->
-    <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>
-    <script src="https://openlayers.org/en/v4.1.0/build/ol.js"></script>
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="ol.js"></script>
+    <script src="jquery.js"></script>
     <script>
     // JavaScript Document
     // Database and Spatial parameters
@@ -205,7 +203,7 @@
       /* Add basemap service */
       /*---------------------*/
       var raster = new ol.layer.Tile({
-        source: new ol.source.OSM() //new ol.source.MapQuest({layer: 'osm'})
+        source: new ol.source.OSM()
       });
       /*-----------------------*/
     	/* Add sacle line to map */
@@ -299,8 +297,11 @@
             }));
             map.addLayer(vectorLayer);
             map.addLayer(pointLayer);
-            map.getView().setCenter(coordinates);
-            map.getView().setZoom(max_zoom);
+            map.getView().animate({
+              center: coordinates,
+              duration: 500,
+              zoom: max_zoom
+            });
             loading.style.visibility = 'hidden';
           }
         });
