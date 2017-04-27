@@ -1,5 +1,5 @@
 # Created by .ignore support plugin (hsz.mobi)
-.idea
-venv
-logs
+.idea/
+venv/
+logs/
 logging.conf
