@@ -9,9 +9,9 @@ except ImportError:
 import logging
 import tempfile
 import xml.etree.ElementTree as ET
-from app.control.Schemas.ogc.epsg import WGS84WM
-from app.model.geoserver import GEOSERVER_URL
-from app.model.viewshed import viewshed_payload, raster_viewshed
+from grass_app.control.Schemas.ogc.epsg import WGS84WM
+from grass_app.model.geoserver import GEOSERVER_URL
+from grass_app.model.viewshed import viewshed_payload, raster_viewshed
 
 log = logging.getLogger(__name__)
 

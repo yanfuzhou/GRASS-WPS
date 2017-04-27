@@ -87,8 +87,8 @@ def raster_viewshed(coordinates, distance, height, rasterfile):
     outraster = 'viewshed'
     outvector = 'polygonized'
     dissolved = 'dissolved'
-    grass.run_command('r.in.gdal', input=rasterfile, output=rastermap)
-    grass.run_command('r.viewshed', input=rastermap, output=outraster, coordinates=coordinates,
+    grass.run_command('r.in.gdal', quiet=True, input=rasterfile, output=rastermap)
+    grass.run_command('r.viewshed', quiet=True, input=rastermap, output=outraster, coordinates=coordinates,
                       observer_elevation=height, max_distance=distance)
     grass.run_command('r.to.vect', input=outraster, output=outvector, type='area')
     grass.run_command('v.db.addcolumn', map=outvector, columns='dis int')

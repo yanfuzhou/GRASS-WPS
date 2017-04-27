@@ -1,12 +1,12 @@
 import math
 import logging
 from flask import request
-from app.model import ViewShed
-from app.control.API import api
+from grass_app.model import ViewShed
+from grass_app.control.API import api
 from flask_restplus import Resource
-from app.control.Schemas import wps
-from app.model import ServiceRegister
-from app.control.Parsers import viewshed_arguments
+from grass_app.control.Schemas import wps
+from grass_app.model import ServiceRegister
+from grass_app.control.Parsers import viewshed_arguments
 
 ns = api.namespace('wps', description='Perform web spatial analysis')
 log = logging.getLogger(__name__)

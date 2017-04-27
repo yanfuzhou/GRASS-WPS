@@ -1,6 +1,6 @@
 import logging
 from flask_restplus import Api
-from app import settings
+from grass_app import settings
 
 log = logging.getLogger(__name__)
 

@@ -1,6 +1,6 @@
-from app.control.API import api
+from grass_app.control.API import api
 from flask_restplus import fields
-from app.control.Schemas.ogc import crs_properties
+from grass_app.control.Schemas.ogc import crs_properties
 
 wps = api.model('wps', {
     'service': fields.String(required=True, readOnly=True, description="WPS name"),

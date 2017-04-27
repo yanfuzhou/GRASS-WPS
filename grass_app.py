@@ -1,9 +1,9 @@
 import os
 import logging.config
-from app import settings
-from app.control.API import api
+from grass_app import settings
+from grass_app.control.API import api
 from flask import Flask, Blueprint, send_from_directory
-from app.control.view.wpsview import ns as viewshed_namespace
+from grass_app.control.view.wpsview import ns as viewshed_namespace
 
 app = Flask(__name__)
 logging.config.fileConfig('logging.conf')
