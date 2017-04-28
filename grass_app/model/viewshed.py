@@ -1,6 +1,7 @@
 import os
 import sys
 import uuid
+import shutil
 import logging
 import binascii
 import tempfile
@@ -99,6 +100,9 @@ def raster_viewshed(coordinates, distance, height, rasterfile):
     grass.run_command('v.dissolve', input=outvector, column='dis', output=dissolved)
     vectorfile = os.path.join(tempfile.gettempdir(), str(uuid.uuid1()) + '.geojson')
     grass.run_command('v.out.ogr', input=dissolved, output=vectorfile, format='GeoJSON')
+    # Finally remove the temporary batch location from disk
+    log.info('Removing location %s' % location_path)
+    shutil.rmtree(location_path)
     return vectorfile
 
 
