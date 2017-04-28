@@ -5,9 +5,19 @@ from grass_app.control.API import api
 from flask import Flask, Blueprint, send_from_directory
 from grass_app.control.view.wpsview import ns as viewshed_namespace
 
-app = Flask(__name__)
+uri = 'grass'
 logging.config.fileConfig('logging.conf')
 log = logging.getLogger(__name__)
+app = Flask(__name__)
+log.info('>>>>> Starting development server at http://{}'.format('localhost:5000/' + uri + '/ <<<<<'))
+app.config['SWAGGER_UI_DOC_EXPANSION'] = settings.RESTPLUS_SWAGGER_UI_DOC_EXPANSION
+app.config['RESTPLUS_VALIDATE'] = settings.RESTPLUS_VALIDATE
+app.config['RESTPLUS_MASK_SWAGGER'] = settings.RESTPLUS_MASK_SWAGGER
+app.config['ERROR_404_HELP'] = settings.RESTPLUS_ERROR_404_HELP
+control = Blueprint(uri, __name__, url_prefix='/' + uri)
+api.init_app(control)
+api.add_namespace(viewshed_namespace)
+app.register_blueprint(control)
 
 
 @app.route('/favicon.ico')
@@ -45,24 +55,5 @@ def viewshed():
     return send_from_directory(os.path.join(app.root_path, 'static', 'demo'), 'viewshed.html', mimetype='text/html')
 
 
-def configure_app(flask_app):
-    flask_app.config['SERVER_NAME'] = settings.FLASK_SERVER_NAME
-    flask_app.config['SWAGGER_UI_DOC_EXPANSION'] = settings.RESTPLUS_SWAGGER_UI_DOC_EXPANSION
-    flask_app.config['RESTPLUS_VALIDATE'] = settings.RESTPLUS_VALIDATE
-    flask_app.config['RESTPLUS_MASK_SWAGGER'] = settings.RESTPLUS_MASK_SWAGGER
-    flask_app.config['ERROR_404_HELP'] = settings.RESTPLUS_ERROR_404_HELP
-
-
-def initialize(flask_app, flask_app_uri):
-    configure_app(flask_app)
-    control = Blueprint(flask_app_uri, __name__, url_prefix='/' + flask_app_uri)
-    api.init_app(control)
-    api.add_namespace(viewshed_namespace)
-    flask_app.register_blueprint(control)
-
-
 if __name__ == '__main__':
-    uri = 'grass'
-    initialize(app, uri)
-    log.info('>>>>> Starting development server at http://{}'.format(app.config['SERVER_NAME'] + '/' + uri + '/ <<<<<'))
-    app.run(debug=settings.FLASK_DEBUG)
+    app.run(host='0.0.0.0', debug=settings.FLASK_DEBUG)
