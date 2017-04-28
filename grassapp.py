@@ -9,7 +9,7 @@ uri = 'grass'
 logging.config.fileConfig('logging.conf')
 log = logging.getLogger(__name__)
 app = Flask(__name__)
-log.info('>>>>> Starting development server at http://{}'.format('localhost:5000/' + uri + '/ <<<<<'))
+log.info('>>>>> Starting development server at http://{}'.format('localhost:4000/' + uri + '/ <<<<<'))
 app.config['SWAGGER_UI_DOC_EXPANSION'] = settings.RESTPLUS_SWAGGER_UI_DOC_EXPANSION
 app.config['RESTPLUS_VALIDATE'] = settings.RESTPLUS_VALIDATE
 app.config['RESTPLUS_MASK_SWAGGER'] = settings.RESTPLUS_MASK_SWAGGER
