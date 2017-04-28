@@ -10,9 +10,9 @@ log = logging.getLogger(__name__)
 
 
 def raster_viewshed(coordinates, distance, height, rasterfile):
-    # Linux: Set path to GRASS bin executable (TODO: NEEDED?)
+    # Todo: Set path to GRASS bin executable
     grass7bin = os.getenv('GRASS_BIN')
-    # Linux: Set path to GRASS libs (TODO: NEEDED?)
+    # Todo: Set path to GRASS libs
     path = os.getenv('LD_LIBRARY_PATH')
     # query GRASS GIS itself for its GISBASE
     startcmd = grass7bin + ' --config path'
@@ -30,8 +30,11 @@ def raster_viewshed(coordinates, distance, height, rasterfile):
     # set GISBASE environment variable
     os.environ['GISBASE'] = gisbase
     # define GRASS-Python environment
-    gpydir = os.path.join(gisbase, "etc", "python")
-    sys.path.append(gpydir)
+    # Todo: If you haven't done following in the terminal
+    # Todo: e.g, $ add2virtualenv /usr/local/Cellar/grass7/7.2.0/grass-base/etc/python
+    # Todo: please enable below two lines
+    # gpydir = os.path.join(gisbase, "etc", "python")
+    # sys.path.append(gpydir)
     ########
     # define GRASS DATABASE
     gisdb = os.path.join(tempfile.gettempdir(), 'grassdata')
