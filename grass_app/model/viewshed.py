@@ -11,23 +11,12 @@ log = logging.getLogger(__name__)
 
 
 def raster_viewshed(coordinates, distance, height, rasterfile):
-    # Todo: Set path to GRASS bin executable
+    # Todo: Set grass7bin to $GRASS_BIN (executable)
     grass7bin = os.getenv('GRASS_BIN')
-    # Todo: Set path to GRASS libs
+    # Todo: Set path to $LD_LIBRARY_PATH
     path = os.getenv('LD_LIBRARY_PATH')
-    # query GRASS GIS itself for its GISBASE
-    startcmd = grass7bin + ' --config path'
-    try:
-        p = subprocess.Popen(startcmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        out, err = p.communicate()
-    except OSError as error:
-        sys.exit("ERROR: Cannot find GRASS GIS start script"
-                 " {cmd}: {error}".format(cmd=startcmd[0], error=error))
-    if p.returncode != 0:
-        log.info("ERROR: %s" % err)
-        log.info("ERROR: Cannot find GRASS GIS 7 start script (%s)" % startcmd)
-        sys.exit(-1)
-    gisbase = out.strip(os.linesep)
+    # Todo: Set gisbase to $GISBASE
+    gisbase = os.getenv('GISBASE')
     # set GISBASE environment variable
     os.environ['GISBASE'] = gisbase
     # define GRASS-Python environment
