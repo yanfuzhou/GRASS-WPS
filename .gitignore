@@ -3,4 +3,4 @@
 venv/
 logs/
 logging.conf
-gunicorn.sh
+*.sh
