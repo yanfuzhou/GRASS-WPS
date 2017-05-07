@@ -1,4 +1,3 @@
-import math
 import logging
 from flask import request
 from grass_app.model import ViewShed
