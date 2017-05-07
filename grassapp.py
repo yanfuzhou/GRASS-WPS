@@ -24,36 +24,5 @@ app.register_blueprint(control)
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.ico', mimetype='image/x-icon')
 
-
-@app.route('/grass/wps/demo')
-def demo():
-    return send_from_directory(os.path.join(app.root_path, 'static', 'demo'), 'index.html', mimetype='text/html')
-
-
-@app.route('/grass/wps/demo/ol.css')
-def openlayer_css():
-    return send_from_directory(os.path.join(app.root_path, 'static', 'demo'), 'ol.css', mimetype='text/css')
-
-
-@app.route('/grass/wps/demo/ol.js')
-def openlayer_js():
-    return send_from_directory(os.path.join(app.root_path, 'static', 'demo'), 'ol.js', mimetype='text/javascript')
-
-
-@app.route('/grass/wps/demo/jquery.js')
-def jquery():
-    return send_from_directory(os.path.join(app.root_path, 'static', 'demo'), 'jquery.js', mimetype='text/javascript')
-
-
-@app.route('/grass/wps/demo/home.png')
-def map_home_button():
-    return send_from_directory(os.path.join(app.root_path, 'static', 'demo'), 'home.png', mimetype='image/png')
-
-
-@app.route('/grass/wps/demo/viewshed')
-def viewshed():
-    return send_from_directory(os.path.join(app.root_path, 'static', 'demo'), 'viewshed.html', mimetype='text/html')
-
-
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=settings.FLASK_DEBUG)

@@ -8,7 +8,7 @@ api = Api(version='1.0 (alpha)', title='GRASS WPS',
           description='<a href="https://grass.osgeo.org">GRASS</a> '
                       'web processing service built on top of '
                       '<a href="http://geoserver.org">GeoServer</a> '
-                      'by using python binding/wrapper (see <a href="wps/demo">Demo</a>).')
+                      'by using python binding/wrapper.')
 
 
 @api.errorhandler
